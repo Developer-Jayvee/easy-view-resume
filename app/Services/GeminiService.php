@@ -45,7 +45,7 @@ class GeminiService
             $requests[] = new EmbedContentRequest(
                 model: $this->embedModelName,
                 part: $text,
-                outputDimensionality: 1536
+                outputDimensionality: config('gemini.output_dimension')
             );
         }
         return $this->embedModel->batchEmbedContents(...$requests);

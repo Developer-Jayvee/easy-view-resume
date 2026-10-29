@@ -40,4 +40,6 @@ return [
         'embed' => env('GEMINI_EMBED_MODEL',""),
         'generative' => env('GEMINI_GENERATIVE_MODEL','')
     ],
+
+    'output_dimension' => env('GEMINI_OUTPUT_DIMENSION',1536)
 ];
