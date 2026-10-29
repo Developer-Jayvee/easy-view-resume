@@ -11,3 +11,6 @@ Route::get('/',[HomeController::class,'index' ]);
 Route::post('upload',[UploadFileController::class,'upload']);
 Route::get('document',[DocumentController::class,'index']);
 Route::get('document/{documentId}/show',[DocumentController::class, 'show']);
+Route::prefix('chat-bot')->group(function () {
+    
+});
