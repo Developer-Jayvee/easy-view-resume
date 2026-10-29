@@ -2,36 +2,43 @@
 
 namespace App\Services;
 
-use App\Models\Documents;
 use App\Repositories\DocumentRepository;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class UploadFileService
 {
     public function __construct(
         protected readonly DocumentRepository $repository,
-        protected readonly FileStorageService $fileService
+        protected readonly FileStorageService $fileService,
+        protected readonly ResumeService $resumeService
     ) {}
+
     public function upload(UploadedFile $resume)
     {
         try {
             $fileDetails = $this->storeFileToStorage($resume);
 
             $data = DB::transaction(function () use ($fileDetails, $resume) {
+                
                 $path = $this->fileService->storeFile(
-                    path: "resumes",
+                    path: 'resumes',
                     file: $resume,
                     name: $fileDetails['new_file_name']
                 );
-                $fileData = $this->repository->uploadDocument($fileDetails,$path);
+                $fileData = $this->repository->uploadDocument($fileDetails, $path);
+
+                $chunk = $this->resumeService->convertBatchEmbeddings(file: $resume, docu: $fileData);
+
+                $this->repository->batchStoreChunk($fileData->id, $chunk);
+
                 return $fileData;
             });
 
-            return response()->json([ 'data' => $data, 'status' => true, 'message' => null ]);
+            return response()->json(['data' => $data, 'status' => true, 'message' => null]);
         } catch (\Exception $ex) {
+            dd($ex);
             return response()->json([
                 'data' => $ex->getMessage(),
                 'status' => true,

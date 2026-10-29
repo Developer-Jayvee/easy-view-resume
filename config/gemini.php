@@ -36,4 +36,8 @@ return [
     */
 
     'request_timeout' => env('GEMINI_REQUEST_TIMEOUT', 30),
+    'model' => [
+        'embed' => env('GEMINI_EMBED_MODEL',""),
+        'generative' => env('GEMINI_GENERATIVE_MODEL','')
+    ],
 ];
