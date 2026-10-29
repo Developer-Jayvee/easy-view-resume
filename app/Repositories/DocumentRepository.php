@@ -34,4 +34,22 @@ class DocumentRepository
     {
         return DocumentChunks::query()->insert($data);
     }
+
+    public function fetchPaginatedDocuments(int $perPage = 10 , int $page = 1)
+    {
+        return Documents::query()->paginate(
+            perPage: $perPage,
+            page: $page
+        );
+    }
+    
+    public function fetchDocuments()
+    {
+        return Documents::query()->get();
+    }
+
+    public function findOrFailDocument(int $documentId)
+    {
+        return Documents::query()->findOrFail($documentId);
+    }
 }
