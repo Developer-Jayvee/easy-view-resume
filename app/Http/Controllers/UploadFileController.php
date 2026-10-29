@@ -13,7 +13,7 @@ class UploadFileController extends Controller
     public function upload(UploadFileRequests $request)
     {
         return $this->service->upload(
-            resume: $request->file('resumeFile')
+            resume: $request->file('resume')
         );
     }
 }
