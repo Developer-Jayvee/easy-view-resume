@@ -11,6 +11,7 @@ class Conversation extends Model
         'title',
         'description',
         'summary',
-        'last_message_summary_id'
+        'last_message_summary_id',
+        'document_id'
     ];
 }

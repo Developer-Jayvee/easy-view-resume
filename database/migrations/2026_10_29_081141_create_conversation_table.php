@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->foreignId('document_id')->nullable();
             $table->string('description')->nullable();
             $table->string("summary")->nullable();
             $table->unsignedBigInteger('last_message_summary_id')->nullable();
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('conversation');
+        Schema::dropIfExists('conversations');
     }
 };
