@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type Dispatch, type FormEvent, type SetStateAction } from 'react';
 import type { DocumentsData } from '@/pages/HomePage.js';
 import ChatComposer from './ChatComposer.js';
 import ChatMessages, { type ChatMessage } from './ChatMessages.js';
@@ -19,12 +19,14 @@ type SummaryPanelProps = {
   viewDocument: (id: string) => Promise<void>;
   sendUserInput:  (prompt: string, role: "user" | "agent") => Promise<void>; 
   canChat: boolean;
+  messages: ChatMessage[],
+  setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
 };
 
-export default function SummaryPanel({ documents, viewDocument, sendUserInput, canChat }: SummaryPanelProps) {
+export default function SummaryPanel({ documents, viewDocument, sendUserInput, canChat, messages, setMessages }: SummaryPanelProps) {
   
   const [prompt, setPrompt] = useState('');
-  const [messages, setMessages] = useState(initialMessages);
+  // const [messages, setMessages] = useState(initialMessages);
   
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

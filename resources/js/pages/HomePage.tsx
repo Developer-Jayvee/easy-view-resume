@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PageFooter from '../components/resume-summarizer/PageFooter.js';
 import PageIntro from '../components/resume-summarizer/PageIntro.js';
 import SummaryPanel from '../components/resume-summarizer/SummaryPanel.js';
@@ -7,6 +7,8 @@ import axios from 'axios';
 import useUploadDocument from '@/features/documents/hooks/useUploadDocument.js';
 import useDocuments from '@/features/documents/hooks/useDocument.js';
 import usePrompt from '@/features/prompt/hooks/usePrompt.js';
+import useStreamChat from '@/features/stream/hooks/useStreamChat.js';
+import type { ChatMessage } from '@/components/resume-summarizer/ChatMessages.js';
 
 export interface ConversationData {
     id: string;
@@ -25,14 +27,49 @@ export interface DocumentsData {
   status: string;
   conversation: ConversationData|null;
 }
+
+const initialMessages: ChatMessage[] = [
+  {
+    id: 1,
+    role: 'assistant',
+    content:
+      'Hi! I’m your resume assistant. Ask me to highlight strengths, explain experience, or suggest improvements.',
+  },
+];
+
+
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedDocument,setSelectedDocument] = useState<DocumentsData|null>(null);
-  const [currentConvo,setCurrentConvo] = useState();
   const [documents,setDocuments] = useState<DocumentsData[]>([]);
   const { uploadDocument } = useUploadDocument()
   const { getDocuments, showDocument } = useDocuments()
   const { storeUserPrompt, sendUserPrompt } = usePrompt()
+  const [messages, setMessages] = useState(initialMessages);
+  const [streamMessage,setStreamMessage] = useState<string>("");
+  const streamMessageRef = useRef<string>("");
+  const streamAgentChat = useStreamChat({
+      onDataCallback: (data) => {
+          streamMessageRef.current += data;
+          setStreamMessage(streamMessageRef.current);
+      },
+      onFinishCallback: () => {
+          try {
+              setMessages((currentMessages) => [
+                  ...currentMessages,
+                  {
+                      id: Date.now() + 1,
+                      role: "assistant",
+                      content: streamMessage,
+                  },
+              ]);
+          } finally {
+              streamMessageRef.current = "";
+              setStreamMessage("");
+          }
+      },
+  });
+  
   const setDocumentList = async () => {
     const data = await getDocuments();
     setDocuments(data?.data ?? [])
@@ -63,11 +100,11 @@ export default function HomePage() {
     const response = await storeUserPrompt(params);
     const data = response?.data;
     if(response) {
-      await sendUserPrompt({
+      streamAgentChat.send({
         ...params,
         chat: data?.content,
         convo_id: data?.conversation_id
-      });
+      })
     }
       
   }
@@ -92,7 +129,9 @@ export default function HomePage() {
             documents,
             viewDocument,
             sendUserInput,
-            canChat: selectedDocument !== null
+            canChat: selectedDocument !== null,
+            messages,
+            setMessages
            }}/>
         </div>
 
