@@ -21,6 +21,7 @@
     "dependencies": {
         "@inertiajs/react": "^3.9.1",
         "@inertiajs/vite": "^3.9.1",
+        "@laravel/stream-react": "^0.3.19",
         "@vitejs/plugin-react": "^6.1.2",
         "axios": "^1.21.0",
         "react": "^19.3.1",

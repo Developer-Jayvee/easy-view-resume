@@ -59,8 +59,12 @@ class GeminiService
         return $this->generativeModel->generateContent($content);
     }
 
-    public function startChat(array $history = [])
+    public function startChat(array $history = [], string $systemInstructions = "")
     {
-        return $this->generativeModel->startChat($history);
+        return $this->generativeModel
+            ->withSystemInstruction(
+                Content::parse($systemInstructions)
+            )
+            ->startChat($history);
     }
 }

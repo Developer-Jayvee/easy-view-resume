@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Http\Prompts\System\RagAssistantPrompt;
+use App\Http\Prompts\Templates\RagContextPrompt;
 use App\Models\DocumentChunks;
 use App\Models\Documents;
 use App\Repositories\ConversationRepository;
@@ -30,26 +32,24 @@ class ChatbotService
             }
 
             $embededPrompt = $this->modelService->embedContent($prompt);
-            $convo = $this->convoRepo->findOrFailConvo($convoId);
 
             $search = DocumentChunks::query()->nearestNeighbors(
                 'embedding',
                 $embededPrompt,
                 Distance::Cosine
             )->take(5)->get();
+            $context = $search->map(fn ($data) => $data->content)->implode('\n\n');
 
-            $summary = $convo->summary ?? 'No summary';
-            $fullPrompt = "
-                Previous conversation summary:
-                {$summary}
+            $systemInstructions = RagAssistantPrompt::get();
+            $userPrompt = RagContextPrompt::build(
+                $prompt,
+                $context
+            );
 
-                Current User Prompt:
-                {$prompt}
-        ";
-            $chat = $this->modelService->startChat();
+            $chat = $this->modelService->startChat(systemInstructions: $systemInstructions);
 
-            return response()->stream(function () use ($chat, $fullPrompt) {
-                $stream = $chat->streamSendMessage($fullPrompt);
+            return response()->stream(function () use ($chat, $userPrompt) {
+                $stream = $chat->streamSendMessage($userPrompt);
                 foreach ($stream as $response) {
                     $text = $response->text();
 
