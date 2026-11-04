@@ -48,8 +48,8 @@ class DocumentRepository
         return Documents::query()->get();
     }
 
-    public function findOrFailDocument(int $documentId)
+    public function findOrFailDocument(int $documentId, array $relations = [])
     {
-        return Documents::query()->findOrFail($documentId);
+        return Documents::query()->with($relations)->findOrFail($documentId);
     }
 }

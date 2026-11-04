@@ -12,7 +12,7 @@ class StoreChatbotRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreChatbotRequest extends FormRequest
     {
         return [
             'chat' => ['required','string'],
-            'convo_id' => ['required'],
+            'convo_id' => ['sometimes'],
             'document_id' => ['required','exists:documents,id']
         ];
     }

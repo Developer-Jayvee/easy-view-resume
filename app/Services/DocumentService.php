@@ -24,7 +24,7 @@ class DocumentService
     public function showDocument(int $documentId)
     {
         return response()->json([
-            'data' => $this->repository->findOrFailDocument($documentId),
+            'data' => $this->repository->findOrFailDocument($documentId,['conversation']),
             'status' => true
         ]);
     }

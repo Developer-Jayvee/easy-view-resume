@@ -18,7 +18,7 @@ class ChatbotController extends Controller
     public function userPrompt(StoreChatbotRequest $request)
     {
         return $this->service->storeMessage(
-            convoId: $request->validated('convo_id'),
+            convoId: (int) $request->validated('convo_id'),
             docu: $this->docuRepo->findOrFailDocument($request->validated('document_id')),
             prompt: $request->validated('chat')
         );

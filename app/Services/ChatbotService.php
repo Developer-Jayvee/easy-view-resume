@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\DocumentChunks;
 use App\Models\Documents;
 use App\Repositories\ConversationRepository;
+use Pgvector\Laravel\Distance;
 
 class ChatbotService
 {
@@ -20,16 +22,22 @@ class ChatbotService
     {
 
         try {
+
             $message = $this->service->storeMessage(convoId: $convoId, docu: $docu, prompt: $prompt, role: 'agent');
 
             if (! $message) {
                 throw new \Exception('Failed to store message');
             }
 
+            $embededPrompt = $this->modelService->embedContent($prompt);
             $convo = $this->convoRepo->findOrFailConvo($convoId);
 
+            $search = DocumentChunks::query()->nearestNeighbors(
+                'embedding',
+                $embededPrompt,
+                Distance::Cosine
+            )->take(5)->get();
 
-            
             $summary = $convo->summary ?? 'No summary';
             $fullPrompt = "
                 Previous conversation summary:

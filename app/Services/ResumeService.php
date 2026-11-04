@@ -23,7 +23,7 @@ class ResumeService
         }
 
         $fileTexts = (new Pdf)->setPdf($file)->text();
-        $data = TextHelper::chunkText($fileTexts);
+        $data = TextHelper::chunkText($fileTexts, maxChars: 1000);
         $embeddings = $this->geminiService->embedBatchContent($data);
 
         foreach ($embeddings->embeddings as $index => $emb) {

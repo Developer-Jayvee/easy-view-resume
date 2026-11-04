@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Documents;
 use App\Repositories\ConversationRepository;
 use App\Repositories\MessageRepository;
+use Illuminate\Support\Facades\DB;
 
 class MessageServices
 {
@@ -16,15 +17,18 @@ class MessageServices
     public function storeMessage(int $convoId, Documents $docu, string $prompt, string $role = 'user')
     {
         try {
-            $conversation = $this->convoRepo->findConvo($convoId);
+            $message = DB::transaction(function () use ($convoId, $prompt, $docu , $role) {
+                $conversation = $this->convoRepo->findConvo($convoId);
 
-            $title = explode(' ', $prompt);
+                $title = explode(' ', $prompt);
 
-            if (! $conversation) {
-                $conversation = $this->convoRepo->createConvo(title: $title[0], docuId: $docu->id);
-            }
+                if (! $conversation) {
+                    $conversation = $this->convoRepo->createConvo(title: $title[0], docuId: $docu->id);
+                }
 
-            $message = $this->messageRepo->createMessage(docuId: $docu->id, prompt: $prompt, role: $role);
+                return $this->messageRepo->createMessage(convoId: $conversation->id, prompt: $prompt, role: $role);
+
+            });
 
             return response()->json(['data' => $message, 'status' => true]);
 

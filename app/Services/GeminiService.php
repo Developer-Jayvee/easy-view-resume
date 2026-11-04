@@ -30,11 +30,12 @@ class GeminiService
         $this->generativeModel = Gemini::generativeModel(model: $generativeModel);
     }
 
-    public function embedContent(string $data): EmbedContentResponse
+    public function embedContent(string $data): array
     {
         $text = Content::parse($data);
 
-        return $this->embedModel->embedContent($text);
+        $data = $this->embedModel->embedContent($text, outputDimensionality: config('gemini.output_dimension'));
+        return $data->embedding->values;
     }
 
     public function embedBatchContent(array $data): BatchEmbedContentsResponse

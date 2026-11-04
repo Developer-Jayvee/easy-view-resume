@@ -13,4 +13,9 @@ class Documents extends Model
         'fileUrl',
         'fileSize'
     ];
+
+    public function conversation()
+    {
+        return $this->belongsTo(Conversation::class,'document_id','id');
+    }
 }

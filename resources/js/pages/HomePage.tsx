@@ -6,7 +6,16 @@ import UploadPanel from '../components/resume-summarizer/UploadPanel.js';
 import axios from 'axios';
 import useUploadDocument from '@/features/documents/hooks/useUploadDocument.js';
 import useDocuments from '@/features/documents/hooks/useDocument.js';
+import usePrompt from '@/features/prompt/hooks/usePrompt.js';
 
+export interface ConversationData {
+    id: string;
+    title: string;
+    description: string | null;
+    summary: string | null;
+    last_message_summary_id: string | null;
+    document_id: string | null;
+}
 export interface DocumentsData {
   id : string;
   fileName : string;
@@ -14,22 +23,56 @@ export interface DocumentsData {
   fileUrl: string;
   fileSize: string;
   status: string;
+  conversation: ConversationData|null;
 }
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedDocument,setSelectedDocument] = useState<DocumentsData|null>(null);
+  const [currentConvo,setCurrentConvo] = useState();
   const [documents,setDocuments] = useState<DocumentsData[]>([]);
   const { uploadDocument } = useUploadDocument()
   const { getDocuments, showDocument } = useDocuments()
+  const { storeUserPrompt, sendUserPrompt } = usePrompt()
   const setDocumentList = async () => {
     const data = await getDocuments();
     setDocuments(data?.data ?? [])
   }
-  const viewDocument = async  (id : string) => {
+  const viewDocument = async (id: string) => {
+      if (id === "") {
+          setSelectedDocument(null);
+          return;
+      }
       const data = await showDocument(id);
-      
-      if(data) setSelectedDocument(data?.data ?? null );
+      setSelectedDocument(data?.data ?? null);
+  };
+  const uploadUserDocument = async (selectedFile: File | null) => {
+    const data = await uploadDocument(selectedFile);
+    if(data) {
+      await getDocuments();
+      await setDocumentList()
+    }
   }
+  const sendUserInput = async (prompt: string, role: "user" | "agent") => {
+    
+    if(! selectedDocument) return;
+    const params = {
+        chat: prompt,
+        document_id: selectedDocument?.id,
+        convo_id: selectedDocument.conversation?.id ?? null,
+    };
+    const response = await storeUserPrompt(params);
+    const data = response?.data;
+    if(response) {
+      await sendUserPrompt({
+        ...params,
+        chat: data?.content,
+        convo_id: data?.conversation_id
+      });
+    }
+      
+  }
+
+
   useEffect(() => {
     setDocumentList()
   },[])
@@ -43,11 +86,13 @@ export default function HomePage() {
           <UploadPanel {...{ 
             onFileSelect:(file) => { setSelectedFile(file) },
             selectedFile,
-            uploadDocument,
+            uploadDocument: uploadUserDocument,
            }} />
           <SummaryPanel {...{ 
             documents,
-            viewDocument
+            viewDocument,
+            sendUserInput,
+            canChat: selectedDocument !== null
            }}/>
         </div>
 
