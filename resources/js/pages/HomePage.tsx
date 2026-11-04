@@ -29,12 +29,12 @@ export interface DocumentsData {
 }
 
 const initialMessages: ChatMessage[] = [
-  {
-    id: 1,
-    role: 'assistant',
-    content:
-      'Hi! I’m your resume assistant. Ask me to highlight strengths, explain experience, or suggest improvements.',
-  },
+  // {
+  //   id: 1,
+  //   role: 'assistant',
+  //   content:
+  //     'Hi! I’m your resume assistant. Ask me to highlight strengths, explain experience, or suggest improvements.',
+  // },
 ];
 
 
@@ -48,7 +48,17 @@ export default function HomePage() {
   const [messages, setMessages] = useState(initialMessages);
   const [streamMessage,setStreamMessage] = useState<string>("");
   const streamMessageRef = useRef<string>("");
-  const streamAgentChat = useStreamChat({
+  const [streamError,setStreamError] = useState<string|null>(null);
+  const {
+      send: sendAgentChat,
+      isStreaming,
+      isFetching,
+  } = useStreamChat({
+      onErrorCallback: (error: Error) => {
+          if(error.message) {
+            setStreamError(error.message)
+          }
+      },
       onDataCallback: (data) => {
           streamMessageRef.current += data;
           setStreamMessage(streamMessageRef.current);
@@ -63,7 +73,12 @@ export default function HomePage() {
                       content: streamMessage,
                   },
               ]);
-          } finally {
+          } catch(error: any) {
+              if( error instanceof Error) {
+                setStreamError(error.message)
+              }
+          }
+          finally {
               streamMessageRef.current = "";
               setStreamMessage("");
           }
@@ -100,7 +115,7 @@ export default function HomePage() {
     const response = await storeUserPrompt(params);
     const data = response?.data;
     if(response) {
-      streamAgentChat.send({
+      sendAgentChat({
         ...params,
         chat: data?.content,
         convo_id: data?.conversation_id
@@ -131,7 +146,10 @@ export default function HomePage() {
             sendUserInput,
             canChat: selectedDocument !== null,
             messages,
-            setMessages
+            setMessages,
+            isFetching,
+            isStreaming,
+            error: streamError
            }}/>
         </div>
 

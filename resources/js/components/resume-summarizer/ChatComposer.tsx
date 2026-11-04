@@ -6,9 +6,11 @@ type ChatComposerProps = {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   sendUserInput:  ( role: "user" | "agent") => Promise<void>; 
   canChat: boolean;
+  error: string|null;
+
 };
 
-export default function ChatComposer({ prompt, setPrompt, onSubmit, sendUserInput,canChat }: ChatComposerProps) {
+export default function ChatComposer({ prompt, setPrompt, onSubmit, sendUserInput,canChat, error }: ChatComposerProps) {
     
   return (
     <form onSubmit={onSubmit} className="mt-4">
@@ -19,7 +21,7 @@ export default function ChatComposer({ prompt, setPrompt, onSubmit, sendUserInpu
         <textarea
           id="chat-prompt"
           rows={1}
-          disabled={!canChat}
+          disabled={!canChat || error !== null}
           value={prompt}
           onChange={(event) => setPrompt(event.currentTarget.value)}
           onKeyDown={(event) => {
@@ -35,7 +37,7 @@ export default function ChatComposer({ prompt, setPrompt, onSubmit, sendUserInpu
         <button
             onClick={async () => await sendUserInput("user")}
           type="submit"
-          disabled={!prompt.trim() || !canChat}
+          disabled={!prompt.trim() || !canChat || error !== null}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
           aria-label="Send message"
         >
