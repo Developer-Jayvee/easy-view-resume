@@ -79,7 +79,7 @@ export default function ChatMessages({ messages, isStreaming, isFetching,error }
                 className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
                 <p className="font-semibold">We couldn’t complete your request just now.</p>
-                <p className="mt-1">{error}</p>
+                {/* <p className="mt-1">{error}</p> */}
                 <p className="mt-1">Your message is still here. Please wait a few seconds and try again. If the problem continues, check your internet connection and resend your message.</p>
             </div>
         )}
