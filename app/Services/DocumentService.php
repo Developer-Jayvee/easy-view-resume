@@ -34,7 +34,7 @@ class DocumentService
 
     public function vectorSearch(array $embedding, string $query): RerankingResponse
     {
-        $documents = $this->repository->vectorEmbeddingSearch($embedding);
+        $documents = $this->repository->hybridVectorSearch(embededPrompt: $embedding, query: $query);
 
         return $this->rerankService->rerank( 
             query: $query, 

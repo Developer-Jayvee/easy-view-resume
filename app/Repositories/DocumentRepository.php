@@ -66,4 +66,19 @@ class DocumentRepository
                 Distance::Cosine
             )->take($limit)->get();
     }
+
+    public function keywordContentSearch(string $query, int $limit = 5) 
+    {
+        return DocumentChunks::query()->where('content','LIKE',"%{$query}%");
+      
+    }
+
+    public function hybridVectorSearch(string $query , array $embededPrompt, int $limit = 5)
+    {
+        return $this->keywordContentSearch($query)->nearestNeighbors(
+                'embedding',
+                $embededPrompt,
+                Distance::Cosine
+            )->take($limit)->get();
+    }
 }
