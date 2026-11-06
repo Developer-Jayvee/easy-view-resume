@@ -19,6 +19,8 @@ return [
     'default_for_transcription' => 'openai',
     'default_for_embeddings' => 'openai',
     'default_for_reranking' => 'cohere',
+    'default_limit_for_reranking' => env('RERANKING_LIMIT',5),
+    'default_timeout_for_reranking' => env('RERANKING_TIMEOUT',60),
     'default_for_classification' => 'typesafe',
 
     /*

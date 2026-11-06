@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Models\DocumentChunks;
 use App\Models\Documents;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
+use Pgvector\Laravel\Distance;
 
 class DocumentRepository
 {
@@ -51,5 +53,17 @@ class DocumentRepository
     public function findOrFailDocument(int $documentId, array $relations = [])
     {
         return Documents::query()->with($relations)->findOrFail($documentId);
+    }
+
+    /**
+     * return Collection<int,DocumentChunks>
+     */
+    public function vectorEmbeddingSearch(array $embededPrompt, int $limit = 5): Collection
+    {
+        return  DocumentChunks::query()->nearestNeighbors(
+                'embedding',
+                $embededPrompt,
+                Distance::Cosine
+            )->take($limit)->get();
     }
 }

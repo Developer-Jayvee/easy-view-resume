@@ -4,10 +4,8 @@ namespace App\Services;
 
 use App\Http\Prompts\System\RagAssistantPrompt;
 use App\Http\Prompts\Templates\RagContextPrompt;
-use App\Models\DocumentChunks;
 use App\Models\Documents;
 use App\Repositories\ConversationRepository;
-use Pgvector\Laravel\Distance;
 
 class ChatbotService
 {
@@ -17,7 +15,8 @@ class ChatbotService
     public function __construct(
         protected readonly MessageServices $service,
         protected readonly GeminiService $modelService,
-        protected readonly ConversationRepository $convoRepo
+        protected readonly ConversationRepository $convoRepo,
+        protected readonly DocumentService $docService
     ) {}
 
     public function agentPrompt(int $convoId, Documents $docu, string $prompt, string $role = 'user')
@@ -33,12 +32,9 @@ class ChatbotService
 
             $embededPrompt = $this->modelService->embedContent($prompt);
 
-            $search = DocumentChunks::query()->nearestNeighbors(
-                'embedding',
-                $embededPrompt,
-                Distance::Cosine
-            )->take(5)->get();
-            $context = $search->map(fn ($data) => $data->content)->implode('\n\n');
+            $search = $this->docService->vectorSearch($embededPrompt,$prompt);
+            
+            $context = collect($search->results)->map(fn ($data) => $data->document)->implode('\n\n');
 
             $systemInstructions = RagAssistantPrompt::get();
             $userPrompt = RagContextPrompt::build(
@@ -69,4 +65,6 @@ class ChatbotService
         }
 
     }
+
+
 }
