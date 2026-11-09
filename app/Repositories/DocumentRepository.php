@@ -58,9 +58,9 @@ class DocumentRepository
     /**
      * return Collection<int,DocumentChunks>
      */
-    public function vectorEmbeddingSearch(array $embededPrompt, int $limit = 5): Collection
+    public function vectorEmbeddingSearch(Documents $docu,array $embededPrompt, int $limit = 5): Collection
     {
-        return  DocumentChunks::query()->nearestNeighbors(
+        return  $docu->chunks()->getQuery()->nearestNeighbors(
                 'embedding',
                 $embededPrompt,
                 Distance::Cosine
@@ -77,12 +77,4 @@ class DocumentRepository
         return DocumentChunks::search($query)->where('document_id',$docu->id)->take($limit)->get();
     }
 
-    public function hybridVectorSearch(Documents $docu,string $query , array $embededPrompt, int $limit = 5)
-    {
-        return $docu->chunks()->getQuery()->nearestNeighbors(
-                'embedding',
-                $embededPrompt,
-                Distance::Cosine
-            )->take($limit)->get();
-    }
 }
