@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Documents;
 use App\Repositories\DocumentRepository;
 use App\Services\RAG\RerankingService;
 use Laravel\Ai\Responses\RerankingResponse;
@@ -32,9 +33,10 @@ class DocumentService
         ]);
     }
 
-    public function vectorSearch(array $embedding, string $query): RerankingResponse
-    {
-        $documents = $this->repository->hybridVectorSearch(embededPrompt: $embedding, query: $query);
+    public function vectorSearch(Documents $docu,array $embedding, string $query): RerankingResponse
+    {   
+        // $search = $this->repository->findAndKeywordSearch($docu,$query);
+        $documents = $this->repository->hybridVectorSearch(docu : $docu ,embededPrompt: $embedding, query: $query);
 
         return $this->rerankService->rerank( 
             query: $query, 

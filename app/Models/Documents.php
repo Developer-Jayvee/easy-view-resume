@@ -18,4 +18,9 @@ class Documents extends Model
     {
         return $this->belongsTo(Conversation::class,'document_id','id');
     }
+
+    public function chunks()
+    {
+        return $this->hasOne(DocumentChunks::class,'document_id','id');
+    }
 }

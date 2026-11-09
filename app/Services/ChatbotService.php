@@ -32,7 +32,7 @@ class ChatbotService
 
             $embededPrompt = $this->modelService->embedContent($prompt);
 
-            $search = $this->docService->vectorSearch($embededPrompt,$prompt);
+            $search = $this->docService->vectorSearch($docu,$embededPrompt,$prompt);
             
             $context = collect($search->results)->map(fn ($data) => $data->document)->implode('\n\n');
 

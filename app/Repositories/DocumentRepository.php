@@ -69,13 +69,17 @@ class DocumentRepository
 
     public function keywordContentSearch(string $query, int $limit = 5) 
     {
-        return DocumentChunks::query()->where('content','LIKE',"%{$query}%");
-      
+        return DocumentChunks::search($query)->take($limit)->get();
     }
 
-    public function hybridVectorSearch(string $query , array $embededPrompt, int $limit = 5)
+    public function findAndKeywordSearch(Documents $docu, string $query, int $limit = 5)
     {
-        return $this->keywordContentSearch($query)->nearestNeighbors(
+        return DocumentChunks::search($query)->where('document_id',$docu->id)->take($limit)->get();
+    }
+
+    public function hybridVectorSearch(Documents $docu,string $query , array $embededPrompt, int $limit = 5)
+    {
+        return $docu->chunks()->getQuery()->nearestNeighbors(
                 'embedding',
                 $embededPrompt,
                 Distance::Cosine
