@@ -1,5 +1,6 @@
 import { PulseLoader, SyncLoader } from 'react-spinners';
 import { SparkleIcon } from './icons.js';
+import { Streamdown } from 'streamdown';
 
 export type ChatMessage = {
     id: number;
@@ -41,7 +42,9 @@ export default function ChatMessages({ messages, isStreaming, isFetching,error }
                                 : 'rounded-bl-md border border-slate-100 bg-white text-slate-600 shadow-sm'
                             }`}
                     >
-                        {message.content}
+                        <Streamdown>
+                            {message.content}
+                        </Streamdown>
                     </div>
                     {message.role === 'user' && (
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600">
