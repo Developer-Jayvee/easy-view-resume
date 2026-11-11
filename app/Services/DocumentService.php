@@ -35,7 +35,6 @@ class DocumentService
 
     public function vectorSearch(Documents $docu,array $embedding, string $query): RerankingResponse
     {   
-        $search = $this->repository->findAndKeywordSearch($docu,$query);
         
         $documents = $this->repository->vectorEmbeddingSearch(docu : $docu ,embededPrompt: $embedding);
 

@@ -44,7 +44,7 @@ export default function HomePage() {
   const [documents,setDocuments] = useState<DocumentsData[]>([]);
   const { uploadDocument } = useUploadDocument()
   const { getDocuments, showDocument } = useDocuments()
-  const { storeUserPrompt, sendUserPrompt } = usePrompt()
+  const { storeUserPrompt } = usePrompt()
   const [messages, setMessages] = useState(initialMessages);
   const [streamMessage,setStreamMessage] = useState<string>("");
   const streamMessageRef = useRef<string>("");
@@ -114,7 +114,7 @@ export default function HomePage() {
     };
     const response = await storeUserPrompt(params);
     const data = response?.data;
-    if(response) {
+    if(data) {
       sendAgentChat({
         ...params,
         chat: data?.content,
