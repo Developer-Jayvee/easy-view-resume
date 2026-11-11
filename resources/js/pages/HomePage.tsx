@@ -49,6 +49,7 @@ export default function HomePage() {
   const [streamMessage,setStreamMessage] = useState<string>("");
   const streamMessageRef = useRef<string>("");
   const [streamError,setStreamError] = useState<string|null>(null);
+  const [isUploading,setIsUploading] = useState<boolean>(false);
   const {
       send: sendAgentChat,
       isStreaming,
@@ -98,10 +99,17 @@ export default function HomePage() {
       setSelectedDocument(data?.data ?? null);
   };
   const uploadUserDocument = async (selectedFile: File | null) => {
-    const data = await uploadDocument(selectedFile);
-    if(data) {
-      await getDocuments();
-      await setDocumentList()
+    setIsUploading(prev => true);
+    try {
+      const data = await uploadDocument(selectedFile);
+      if(data) {
+        await getDocuments();
+        await setDocumentList()
+      }
+      
+    } finally {
+      setSelectedFile(null);
+      setIsUploading(prev => false);
     }
   }
   const sendUserInput = async (prompt: string, role: "user" | "agent") => {
@@ -139,6 +147,7 @@ export default function HomePage() {
             onFileSelect:(file) => { setSelectedFile(file) },
             selectedFile,
             uploadDocument: uploadUserDocument,
+            isUploading
            }} />
           <SummaryPanel {...{ 
             documents,

@@ -4,9 +4,10 @@ type UploadPanelProps = {
   selectedFile: File | null;
   onFileSelect: (file: File | null) => void;
   uploadDocument: (file: File | null) => Promise<void>;
+  isUploading: boolean;
 };
 
-export default function UploadPanel({ selectedFile, onFileSelect, uploadDocument  }: UploadPanelProps) {
+export default function UploadPanel({ selectedFile, onFileSelect, uploadDocument, isUploading  }: UploadPanelProps) {
   return (
     <section className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_12px_40px_-24px_rgba(30,41,59,0.25)] sm:p-6">
       <div className="mb-6 flex items-start justify-between gap-3">
@@ -51,12 +52,12 @@ export default function UploadPanel({ selectedFile, onFileSelect, uploadDocument
 
       <button
         type="button"
-        disabled={!selectedFile}
+        disabled={!selectedFile || isUploading}
         className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
         onClick={() => uploadDocument(selectedFile)}
       >
         <SparkleIcon />
-        Generate summary
+        {isUploading ? "Uploading..." : "Upload Document"}
       </button>
       <p className="mt-3 text-center text-[11px] text-slate-400">
         A sample summary is shown on the right.
