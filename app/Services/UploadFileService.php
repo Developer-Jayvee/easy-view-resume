@@ -18,19 +18,17 @@ class UploadFileService
     public function upload(UploadedFile $resume)
     {
         try {
-            $fileDetails = $this->storeFileToStorage($resume);
+            $fileDetails = $this->storagePathData($resume);
 
             $data = DB::transaction(function () use ($fileDetails, $resume) {
                 
                 $path = $this->fileService->storeFile(
-                    path: 'resumes',
                     file: $resume,
                     name: $fileDetails['new_file_name']
                 );
                 $fileData = $this->repository->uploadDocument($fileDetails, $path);
 
                 $chunk = $this->resumeService->convertBatchEmbeddings(file: $resume, docu: $fileData);
-
                 $this->repository->batchStoreChunk($fileData->id, $chunk);
 
                 return $fileData;
@@ -47,7 +45,7 @@ class UploadFileService
         }
     }
 
-    private function storeFileToStorage(UploadedFile $resume)
+    private function storagePathData(UploadedFile $resume)
     {
         $fileName = $resume->getClientOriginalName();
         $fileType = $resume->getClientMimeType();
@@ -58,7 +56,7 @@ class UploadFileService
             'original_name' => $fileName,
             'mime_type' => $fileType,
             'size' => $fileSize,
-            'new_file_name' => $name,
+            'new_file_name' => $name.".".$resume->getClientOriginalExtension(),
         ];
     }
 }

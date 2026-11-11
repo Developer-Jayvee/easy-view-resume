@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "402958d6b8b67783ad2fb5cf2b820082",
+    "content-hash": "4e086ec17f41ee9fdfdd1c0661f5cf92",
     "packages": [
         {
             "name": "brick/math",
@@ -443,6 +443,61 @@
                 }
             ],
             "time": "2026-10-19T17:53:57+00:00"
+        },
+        {
+            "name": "ecourty/text-chunker",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/EdouardCourty/PHPTextChunker.git",
+                "reference": "804d8e0dfce35e9671d75fc69a72dd9ec7a0ecc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/EdouardCourty/PHPTextChunker/zipball/804d8e0dfce35e9671d75fc69a72dd9ec7a0ecc3",
+                "reference": "804d8e0dfce35e9671d75fc69a72dd9ec7a0ecc3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": ">=8.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.95.27",
+                "phpbench/phpbench": "^1.7",
+                "phpstan/phpstan": "2.3.4",
+                "phpunit/phpunit": "^13.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ecourty\\TextChunker\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Edouard Courty",
+                    "email": "edouard.courty2@gmail.com",
+                    "homepage": "https://github.com/EdouardCourty"
+                }
+            ],
+            "description": "A framework-agnostic PHP library for chunking text and files using pluggable strategies and post-processors.",
+            "keywords": [
+                "chunking",
+                "nlp",
+                "rag",
+                "splitting",
+                "text"
+            ],
+            "support": {
+                "issues": "https://github.com/EdouardCourty/PHPTextChunker/issues",
+                "source": "https://github.com/EdouardCourty/PHPTextChunker/tree/1.3.1"
+            },
+            "time": "2026-10-29T10:06:34+00:00"
         },
         {
             "name": "egulias/email-validator",
